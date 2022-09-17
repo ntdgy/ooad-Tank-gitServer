@@ -15,13 +15,16 @@ import java.io.IOException;
 public class GitHttpResolver implements RepositoryResolver<HttpServletRequest> {
     @Override
     public Repository open(HttpServletRequest request, String name) throws RepositoryNotFoundException, ServiceNotAuthorizedException, ServiceNotEnabledException, ServiceMayNotContinueException {
-        System.out.println("ServletPath: " + request.getServletPath());
         System.out.println("name: " + name);
         try {
-            File directory = new File("..");
-            String courseFile = directory.getCanonicalPath();
-            System.out.println(courseFile);
-            var repo = new FileRepository(courseFile + "/ooad-Tank-backend/repo/" + name + ".git");
+            File storeDirectory = new File("../repo-store/");
+            File repoDirectory = new File(storeDirectory, name);
+            var repo = new FileRepository(repoDirectory.getCanonicalPath());
+            if (!repoDirectory.exists()) {
+                repoDirectory.mkdirs();
+                repo.create(true);
+                System.out.println("Create Repo for " + repoDirectory.getCanonicalPath());
+            }
             System.out.println("repo: " + repo);
             return repo;
 //            return new FileRepository("../ooad-Tank-backend/repo/" + name);

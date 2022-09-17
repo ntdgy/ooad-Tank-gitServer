@@ -9,7 +9,7 @@ import javax.servlet.annotation.WebServlet;
 @WebServlet(name = "gitServer", urlPatterns = {"/*"},
         loadOnStartup = 1,
         initParams = {
-                @WebInitParam(name = "base-path", value = "../ooad-Tank-backend/repo/"),
+                @WebInitParam(name = "base-path", value = "../repo-store"),
                 @WebInitParam(name = "export-all", value = "true")
         })
 public class GitServlet extends org.eclipse.jgit.http.server.GitServlet {
