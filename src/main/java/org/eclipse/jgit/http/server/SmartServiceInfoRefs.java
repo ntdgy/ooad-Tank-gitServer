@@ -71,6 +71,7 @@ abstract class SmartServiceInfoRefs implements Filter {
 			try {
 				begin(req, db);
 			} catch (ServiceNotAuthorizedException e) {
+				res.setHeader("WWW-Authenticate", "Basic realm=\"Tank HTTP Git Authentication required.\"");
 				res.sendError(SC_UNAUTHORIZED, e.getMessage());
 				return;
 			} catch (ServiceNotEnabledException e) {

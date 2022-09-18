@@ -117,6 +117,7 @@ public class RepositoryFilter implements Filter {
 			sendError(req, res, SC_FORBIDDEN, e.getMessage());
 			return;
 		} catch (ServiceNotAuthorizedException e) {
+			res.setHeader("WWW-Authenticate", "Basic realm=\"Tank HTTP Git Authentication required.\"");
 			res.sendError(SC_UNAUTHORIZED, e.getMessage());
 			return;
 		} catch (ServiceMayNotContinueException e) {

@@ -103,6 +103,7 @@ class ReceivePackServlet extends HttpServlet {
 			try {
 				rp = receivePackFactory.create(req, getRepository(req));
 			} catch (ServiceNotAuthorizedException e) {
+				rsp.setHeader("WWW-Authenticate", "Basic realm=\"Tank HTTP Git Authentication required.\"");
 				rsp.sendError(SC_UNAUTHORIZED, e.getMessage());
 				return;
 			} catch (ServiceNotEnabledException e) {

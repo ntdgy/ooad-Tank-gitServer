@@ -60,6 +60,7 @@ class AsIsFileFilter implements Filter {
 			asIs.access(req, db);
 			chain.doFilter(request, response);
 		} catch (ServiceNotAuthorizedException e) {
+			res.setHeader("WWW-Authenticate", "Basic realm=\"Tank HTTP Git Authentication required.\"");
 			res.sendError(SC_UNAUTHORIZED, e.getMessage());
 		} catch (ServiceNotEnabledException e) {
 			res.sendError(SC_FORBIDDEN, e.getMessage());
