@@ -1,5 +1,6 @@
 package ooad.Tank.gitServer;
 
+import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.ReceivePack;
 import org.eclipse.jgit.transport.resolver.ReceivePackFactory;
@@ -12,6 +13,7 @@ public class GitReceivePackFactory implements ReceivePackFactory<HttpServletRequ
 
     @Override
     public ReceivePack create(HttpServletRequest req, Repository db) throws ServiceNotEnabledException, ServiceNotAuthorizedException {
-        return null;
+        if (!AuthManager.checkWritePermission(req)) throw new ServiceNotAuthorizedException();
+        return new ReceivePack(db);
     }
 }

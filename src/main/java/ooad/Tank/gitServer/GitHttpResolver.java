@@ -15,7 +15,8 @@ import java.io.IOException;
 public class GitHttpResolver implements RepositoryResolver<HttpServletRequest> {
     @Override
     public Repository open(HttpServletRequest request, String name) throws RepositoryNotFoundException, ServiceNotAuthorizedException, ServiceNotEnabledException, ServiceMayNotContinueException {
-        System.out.println("name: " + name);
+        System.out.println("name: " + name + ", action:" + request.getRequestURI());
+        if (!AuthManager.checkReadPermission(request, name)) throw new ServiceNotAuthorizedException();
         try {
             File storeDirectory = new File("../repo-store/");
             File repoDirectory = new File(storeDirectory, name);
