@@ -1,4 +1,4 @@
-package ooad.Tank.gitServer;
+package ooad.Tank.gitServer.backend;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
