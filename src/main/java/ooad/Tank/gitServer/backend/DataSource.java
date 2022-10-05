@@ -12,7 +12,7 @@ public class DataSource {
     private static final HikariDataSource ds;
 
     static {
-        config.setJdbcUrl("jdbc:postgresql://10.20.37.208:5432/github");
+        config.setJdbcUrl("jdbc:postgresql://ooad.dgy.ac.cn/github");
         config.setUsername("ooad");
         config.setPassword("341d2351-0405-405d-9669-1c717629454b");
         ds = new HikariDataSource(config);

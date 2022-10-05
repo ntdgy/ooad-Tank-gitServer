@@ -10,14 +10,11 @@ public class Backend {
     public static RepoStore resolveRepo(String username, String reponame) {
         try (var conn = DataSource.getConnection()) {
             var pre = conn.prepareStatement("""
-                    select user_id, repo_id
-                    from user_repo
-                             join users u on u.id = user_repo.user_id
-                             join repo r on r.id = user_repo.repo_id
-                    where u.name = ? and r.name = ?;
+                        select repo.owner_id as user_id, repo.id as repo_id from repo
+                            join users uo on uo.id = repo.owner_id where repo.name = ? and uo.name = ?;
                     """);
-            pre.setString(1, username);
-            pre.setString(2, reponame);
+            pre.setString(1, reponame);
+            pre.setString(2, username);
             var result = pre.executeQuery();
             result.next();
             return new RepoStore(result.getInt("user_id"), result.getInt("repo_id"));
