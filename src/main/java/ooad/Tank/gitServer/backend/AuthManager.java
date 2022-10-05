@@ -1,5 +1,6 @@
 package ooad.Tank.gitServer.backend;
 
+import org.eclipse.jgit.transport.resolver.ServiceNotAuthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,37 +9,49 @@ import java.util.Base64;
 
 public class AuthManager {
 
+
     public record AuthInfo(String username, String password) {
     }
 
     public static final String AUTH_READ = "tank.git.auth.read";
     public static final String AUTH_WRITE = "tank.git.auth.write";
+//    public static final String USER_ID = "tank.git.auth.user_id";
+    public static final String REPO = "tank.git.auth.repo";
 
     private static final Logger logger = LoggerFactory.getLogger(AuthManager.class);
 
-    public static boolean checkReadPermission(HttpServletRequest request, String name) {
+    public static boolean checkReadPermission(HttpServletRequest request, Backend.Repo repo) {
         var read = request.getAttribute(AUTH_READ);
         if (read != null && (Boolean) read) return true;
-        // TODO: check permission and set read and write
-        // Now Just Allow read for all repo
+
+        AuthInfo auth = parseAuthInfo(request);
+        if (!repo.isPublic()) {
+            if (auth == null || auth.username() == null || auth.password() == null)
+                return false;
+            int userId = Backend.authenticateUser(auth.username(), auth.password());
+            if (userId == 0) return false;
+
+            if (repo.ownerId() == userId) return true;
+            return Backend.checkUserReadPermission(repo.ownerName(), repo.repoName(), userId);
+        }
+
         request.setAttribute(AUTH_READ, true);
         return true;
     }
 
-    public static boolean checkWritePermission(HttpServletRequest request) {
+    public static boolean checkWritePermission(HttpServletRequest request, Backend.Repo repo) {
         var write = request.getAttribute(AUTH_WRITE);
         if (write != null && (Boolean) write) return true;
+
         AuthInfo auth = parseAuthInfo(request);
         if (auth == null) return false;
 
-        // TODO: check write permission
-        // Now allow password == username ** 2, i.e. admin, adminadmin
-        if (auth.password.equals(auth.username + auth.username)) {
-            request.setAttribute(AUTH_WRITE, true);
-            return true;
-        } else {
-            return false;
-        }
+        int userId = Backend.authenticateUser(auth.username(), auth.password());
+        if (userId == 0) return false;
+
+        if (repo.ownerId() == userId) return true;
+
+        return Backend.checkUserWritePermission(repo.ownerName(), repo.repoName(), userId);
     }
 
     private static AuthInfo parseAuthInfo(HttpServletRequest request) {

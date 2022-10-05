@@ -22,14 +22,14 @@ public class GitHttpResolver implements RepositoryResolver<HttpServletRequest> {
     @Override
     public Repository open(HttpServletRequest request, String name) throws RepositoryNotFoundException, ServiceNotAuthorizedException, ServiceNotEnabledException, ServiceMayNotContinueException {
         System.out.println("name: " + name + ", action:" + request.getRequestURI());
-        if (!AuthManager.checkReadPermission(request, name)) throw new ServiceNotAuthorizedException();
         String[] actions = name.split("/");
         String username = actions[0];
         String repoName = StringUtils.removeEnd(actions[1], ".git");
-        Backend.RepoStore repoStore = Backend.resolveRepo(username, repoName);
-
+        Backend.Repo backRepo = Backend.resolveRepo(username, repoName);
+        if (!AuthManager.checkReadPermission(request, backRepo)) throw new ServiceNotAuthorizedException();
+        request.setAttribute(AuthManager.REPO, backRepo);
         try {
-            File repoDirectory = new File(storeDirectory, String.format("%s/%s", repoStore.userId(), repoStore.repoId()));
+            File repoDirectory = new File(storeDirectory, String.format("%s/%s", backRepo.ownerId(), backRepo.repoId()));
             if (!repoDirectory.exists()) {
                 throw new RuntimeException("repo should already created");
             }
