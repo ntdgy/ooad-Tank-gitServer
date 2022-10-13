@@ -16,7 +16,6 @@ public class GitServlet extends org.eclipse.jgit.http.server.GitServlet {
     public void init(ServletConfig config) throws ServletException {
         setRepositoryResolver(new GitHttpResolver());
         setReceivePackFactory(new GitReceivePackFactory());
-        setAsIsFileService(null);
         super.init(config);
     }
 
