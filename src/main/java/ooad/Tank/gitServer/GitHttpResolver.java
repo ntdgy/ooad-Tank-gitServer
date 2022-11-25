@@ -26,6 +26,7 @@ public class GitHttpResolver implements RepositoryResolver<HttpServletRequest> {
         String username = actions[0];
         String repoName = StringUtils.removeEnd(actions[1], ".git");
         Backend.Repo backRepo = Backend.resolveRepo(username, repoName);
+        if (backRepo == null) throw new RepositoryNotFoundException(name);
         if (!AuthManager.checkReadPermission(request, backRepo)) throw new ServiceNotAuthorizedException();
         request.setAttribute(AuthManager.REPO, backRepo);
         try {

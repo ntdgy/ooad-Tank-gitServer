@@ -24,7 +24,8 @@ public class Backend {
             pre.setString(1, reponame);
             pre.setString(2, username);
             var result = pre.executeQuery();
-            result.next();
+            if (!result.next())
+                return null;
             return new Repo(result.getInt(1), result.getString(2), result.getInt(3), result.getString(4), result.getInt(5) == VISIBLE_PUBLIC);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
